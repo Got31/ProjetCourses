@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Créer une recette</title>
+    <style>
+        fieldset{
+            width: 50%;
+            line-height: 30px;
+        }
+        legend{
+            padding: 0 12px;
+            text-decoration: underline;
+        }
+        fieldset div{
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        .section{
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        #valider{
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <fieldset>
+        <legend>Création recette</legend>
+        <div><label>Nom recette :</label><input id="name" type="text"></div>
+        <div><label>Nombre d'ingrédients :</label><input id="nombre" type="number" min="0"></div>
+        <div><button onclick="ajouterChamp()">Ajouter les ingrédients</button> </div>
+        <section id="ingredients">
+            <select name="" id="liste"></select>
+        </section>
+        <button id="valider">Valider</button>
+        
+    </fieldset>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.26.1/axios.min.js"></script>
+    <script>
+        
+        var valider = document.getElementById('valider')
+        var liste = document.getElementById('liste')
+        valider.addEventListener('click', ()=>{
+            axios.get("/api/ingredients").then((response) => {
+                console.log(response.data);
+
+                //Insérer les dates :
+                response.data.forEach((element, index) => {
+                var option = document.createElement("option");
+                option.innerHTML = element.Nom;
+                liste.appendChild(option);
+                });
+            });
+        })
+
+        function ajouterIngredient(params) {
+            
+        }
+
+
+        /*function ajouterChamp(){
+            var champ = '<label>Nom</label><input id="nameIngredient" type="text"><label>Quantité</label><input id="quantité" type="number" min="0"><label>Prix</label><input id="prixIngredient" type="text">';
+
+            var x = document.getElementById('nombre').value;
+            if (x > 0) {
+                document.getElementById('ingredients').innerHTML = ''
+                for (let i = 0; i < x; i++) {
+                    console.log("coucou");
+                    var div = document.createElement('section')
+                    div.innerHTML = champ;
+                    div.className='section'
+                    document.getElementById('ingredients').appendChild(div);
+                }
+                
+                valider.style.display = 'block'
+            }
+        }*/
+
+        function valider() {
+            
+        }
+
+    </script>
+</body>
+</html>

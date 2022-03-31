@@ -1,4 +1,3 @@
-const express = require("express");
 const app = express();
 
 var mysql = require("mysql");
@@ -33,15 +32,6 @@ let urls = [
   },
 ];
 
-app.get("/api/ingredients", (req, res) => {
-  //   res.json(urls);
-  // Avec mysql :
-  connection.query("SELECT * FROM ingredients", (error, result) => {
-    if (error) throw error;
-    res.json(result);
-  });
-});
-
 /*******
  * ***********
  * ***********
@@ -75,35 +65,6 @@ app.delete("/api/urls/:id", (req, res) => {
   res.json(urls);
 });
 
-app.listen(3001, () => {
-  console.log("serveur lancé sur le port " + 3001);
-});
-
-/*******
- * ***********
- * PROJET MENU
- * ***********
- */
-
-//Récupération des repas :
-app.get("/api/repas", (req, res) => {
-  //   res.json(urls);
-  // Avec mysql :
-  connection.query("SELECT * FROM repas", (error, result) => {
-    if (error) throw error;
-    res.json(result);
-  });
-});
-
-//Récupération des repas et de leurs recettes :
-app.get("/api/recettes_repas", (req, res) => {
-  //   res.json(urls);
-  // Avec mysql :
-  connection.query(
-    "SELECT rps.Invites, DATE_FORMAT(rps.Date_repas, '%d %c %Y), rct.Nom, rct.Deroule FROM repas rps, recette rct, contenir c WHERE c.id_repas = rps.id_repas AND c.id_recette = rct.id_recette",
-    (error, result) => {
-      if (error) throw error;
-      res.json(result);
-    }
-  );
+app.listen(port, () => {
+  console.log("serveur lancé sur le port " + port);
 });
