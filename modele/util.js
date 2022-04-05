@@ -80,21 +80,41 @@ app.listen(3001, () => {
 app.get("/api/repas", (req, res) => {
   //   res.json(urls);
   // Avec mysql :
-  connection.query("SELECT * FROM repas", (error, result) => {
-    if (error) throw error;
-    res.json(result);
-  });
-});
-
-//Récupération des repas et de leurs recettes :
-app.get("/api/recettes_repas", (req, res) => {
-  //   res.json(urls);
-  // Avec mysql :
   connection.query(
-    "SELECT rps.Invites, DATE_FORMAT(rps.Date_repas, '%d %c %Y), rct.Nom, rct.Deroule FROM repas rps, recette rct, contenir c WHERE c.id_repas = rps.id_repas AND c.id_recette = rct.id_recette",
+    // "SELECT * , DATE_FORMAT(Date_repas, '%d %m %Y')  FROM repas",
+    "SELECT id_repas, Invites , DATE_FORMAT(Date_repas, '%d-%m-%Y') as 'Date_repas'  FROM repas",
     (error, result) => {
       if (error) throw error;
       res.json(result);
     }
   );
 });
+
+app.get("/api/repas&recettes/:id", (req, res) => {
+  connection.query(
+    " SELECT rct.Nom, rct.Deroule" +
+      " FROM repas rps, recette rct, contenir c" +
+      " WHERE c.id_repas = rps.id_repas AND c.id_recette = rct.id_recette" +
+      " AND rps.id_repas = " +
+      req.params.id,
+    (error, result) => {
+      if (error) throw error;
+      res.json(result);
+    }
+  );
+});
+
+//Récupération des repas et de leurs recettes :
+/*app.get("/api/repas&recettes", (req, res) => {
+  //   res.json(urls);
+  // Avec mysql :
+  connection.query(
+    " SELECT rps.Invites, DATE_FORMAT(rps.Date_repas, '%d-%m-%Y') as 'Date_repas', rct.Nom, rct.Deroule" +
+      " FROM repas rps, recette rct, contenir c" +
+      " WHERE c.id_repas = rps.id_repas AND c.id_recette = rct.id_recette",
+    (error, result) => {
+      if (error) throw error;
+      res.json(result);
+    }
+  );
+});*/

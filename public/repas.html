@@ -30,28 +30,62 @@
       axios.get("/api/repas").then((response) => {
         console.log(response.data);
 
+        async();
         //Insérer les dates :
         response.data.forEach((element, index) => {
           var tr = document.createElement("tr");
-          //On insère le date :
-          var tdDate = document.createElement("td");
-          tdDate.innerHTML = element.Date_repas;
-          tr.appendChild(tdDate);
+          var btnModifier = document.createElement("button");
+          var btnSupprimer = document.createElement("button");
+          //here newest :
+          /*var casesDuTableau = [
+            (tdDate = document.createElement("td")),
+            // tdDate.setAttribute('id', 'tdDate'+index)
+            (tdInvites = document.createElement("td")),
+            (tdRecettes = document.createElement("td")),
+            (btnModifier = document.createElement("button")),
+            (btnSupprimer = document.createElement("button")),
+          ];
+
+          casesDuTableau.forEach((element, index) => {
+            tr.appendChild(element);
+          });
           tBody.appendChild(tr);
           tableau.appendChild(tBody);
+          */
+          //On insère le date :
+          var tdDate = document.createElement("td");
+
+          tdDate.innerHTML = element.Date_repas;
+          tr.appendChild(tdDate);
 
           //Et ensuite les invitées :
           var tdInvites = document.createElement("td");
           tdInvites.innerHTML = element.Invites;
           tr.appendChild(tdInvites);
+
+          console.log(element.id_repas);
+          //On récupère les recettes de chaque repas et on les ajoute dans le tableau :
+          var tdRecettes = document.createElement("td");
+          axios
+            .get("/api/repas&recettes/" + element.id_repas)
+            .then((response) => {
+              response.data.forEach((recette) => {
+                var pRecette = document.createElement("p");
+                pRecette.innerHTML = recette.Nom;
+                tdRecettes.appendChild(pRecette);
+                tr.appendChild(tdRecettes);
+                // tBody.appendChild(tr);
+                // tableau.appendChild(tBody);
+              });
+            });
+
+          tr.appendChild(tdRecettes);
+          tr.appendChild(btnModifier);
+          tr.appendChild(btnSupprimer);
+
           tBody.appendChild(tr);
           tableau.appendChild(tBody);
         });
-      });
-
-      //On récupère les recettes de chaque repas et on les ajoute dans le tableau :
-      axios.get("/api/recettes_repas").then((response) => {
-        console.log(response);
       });
 
       // var newP = document.createElement("div");
