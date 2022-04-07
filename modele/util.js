@@ -99,6 +99,7 @@ app.get("/api/repas", (req, res) => {
   );
 });
 
+//Récupération d'un repas et de ses recettes :
 app.get("/api/repas&recettes/:id", (req, res) => {
   connection.query(
     " SELECT rct.Nom, rct.Deroule" +
@@ -113,17 +114,24 @@ app.get("/api/repas&recettes/:id", (req, res) => {
   );
 });
 
-//Récupération des repas et de leurs recettes :
-/*app.get("/api/repas&recettes", (req, res) => {
-  //   res.json(urls);
-  // Avec mysql :
+//Suppression d'un repas :
+app.delete("/api/repas/:id", (req, res) => {
   connection.query(
-    " SELECT rps.Invites, DATE_FORMAT(rps.Date_repas, '%d-%m-%Y') as 'Date_repas', rct.Nom, rct.Deroule" +
-      " FROM repas rps, recette rct, contenir c" +
-      " WHERE c.id_repas = rps.id_repas AND c.id_recette = rct.id_recette",
+    " DELETE FROM repas WHERE id_repas = " + req.params.id,
     (error, result) => {
       if (error) throw error;
       res.json(result);
     }
   );
-});*/
+});
+
+//Récupération des ingrédients, de leur quantité et de leur prix
+app.get("/api/course/", (req, res) => {
+  connexion.query(
+    " SELECT Nom, Prix, Quantite FROM ingredient i, composer c WHERE i.id_ingredient = c.id_ingredient ",
+    (error, result) => {
+      if (error) throw error;
+      res.json(result);
+    }
+  );
+});
