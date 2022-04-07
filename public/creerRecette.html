@@ -38,7 +38,9 @@
         <button onclick="ajouterIngredient()">Ajouter les ingrédients</button>
       </div>
       <section id="ingredients">
-        <select name="" id="liste"></select>
+        <select name="" id="liste">
+          <option value="">-------</option>
+        </select>
       </section>
       <button id="valider">Valider</button>
     </fieldset>
@@ -47,10 +49,8 @@
       var valider = document.getElementById("valider");
       var liste = document.getElementById("liste");
 
-      ajouter.addEventListener("click", () => {});
-
       function ajouterIngredient(params) {
-        axios.get("/api/ingredients").then((response) => {
+        axios.get("http://localhost:3001/api/ingredients").then((response) => {
           console.log(response.data);
 
           response.data.forEach((element, index) => {
