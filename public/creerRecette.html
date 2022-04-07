@@ -35,49 +35,52 @@
       <div><label>Nom recette :</label><input id="name" type="text" /></div>
       <!--<div><label>Nombre d'ingrédients :</label><input id="nombre" type="number" min="0"></div>-->
       <div>
-        <button onclick="ajouterIngredient()">Ajouter les ingrédients</button>
+        <button onclick="ajouterIngredient()">Ajouter un ingrédient</button>
+        <button onclick="creerIngredient()">Créer un ingrédient</button>
       </div>
       <section id="ingredients">
-        <select name="" id="liste">
-          <option value="">-------</option>
-        </select>
       </section>
       <button id="valider">Valider</button>
     </fieldset>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.26.1/axios.min.js"></script>
     <script>
       var valider = document.getElementById("valider");
-      var liste = document.getElementById("liste");
+      var section = document.getElementById("ingredients");
+          
 
-      function ajouterIngredient(params) {
+      function ajouterIngredient() {
+        //Création d'une liste déroulante contenant les ingrédient existants, et un champ pour saisir leur prix
         axios.get("http://localhost:3001/api/ingredients").then((response) => {
           console.log(response.data);
-
+          var select = document.createElement("select")
+          section.appendChild(select)
+          var span = document.createElement("span")
+          span.innerHTML = " "
+          section.appendChild(span)
+          var prixInput = document.createElement("input")
+          section.appendChild(prixInput)
+          var br = document.createElement("br")
+          section.appendChild(br)
           response.data.forEach((element, index) => {
             var option = document.createElement("option");
             option.innerHTML = element.Nom;
-            liste.appendChild(option);
+            select.appendChild(option);
           });
         });
       }
 
-      /*function ajouterChamp(){
-            var champ = '<label>Nom</label><input id="nameIngredient" type="text"><label>Quantité</label><input id="quantité" type="number" min="0"><label>Prix</label><input id="prixIngredient" type="text">';
-
-            var x = document.getElementById('nombre').value;
-            if (x > 0) {
-                document.getElementById('ingredients').innerHTML = ''
-                for (let i = 0; i < x; i++) {
-                    console.log("coucou");
-                    var div = document.createElement('section')
-                    div.innerHTML = champ;
-                    div.className='section'
-                    document.getElementById('ingredients').appendChild(div);
-                }
-                
-                valider.style.display = 'block'
-            }
-        }*/
+      function creerIngredient() {
+        //Création de deux champs input pour le nom et le prix d'un ingrédient, séparés par un espace
+        var textInput = document.createElement("input")
+        section.appendChild(textInput)
+        var span = document.createElement("span")
+        span.innerHTML = " "
+        section.appendChild(span)
+        var prixInput = document.createElement("input")
+        section.appendChild(prixInput)
+        var br = document.createElement("br")
+        section.appendChild(br)
+      }
 
       function valider() {}
     </script>
