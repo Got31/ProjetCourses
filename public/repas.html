@@ -11,7 +11,7 @@
     <h2>Gérer ses repas</h2>
     <div id="contenu"></div>
 
-    <table class="tableau" id="tableau_repas">
+    <table class="tableau repas" id="tableau_repas">
       <thead>
         <tr>
           <th id="thDate">Date du repas</th>
@@ -22,90 +22,178 @@
       <button id="btn-liste_course">Génerer la liste de course</button>
     </table>
 
+    <br />
+    <table class="tableau course" id="tableau_course" style="display: none">
+      <thead>
+        <tr>
+          <th id="thIngredient">Ingrédient</th>
+          <th id="thQuantite">Quantité (en g)</th>
+          <th id="thPrix">Prix/le kilo</th>
+        </tr>
+      </thead>
+    </table>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.26.1/axios.min.js"></script>
 
     <script>
-            var tableau = document.querySelector("#tableau_repas");
-            var tBody = document.createElement("tbody");
+      var tableau = document.querySelector("#tableau_repas");
+      var tBody = document.createElement("tbody");
 
-            //On récupère les repas et on les insère dans le tableau :
-            axios.get("/api/repas").then((response) => {
-              console.log(response.data);
+      //On récupère les repas et on les insère dans le tableau :
+      axios.get("/api/repas").then((response) => {
+        console.log(response.data);
 
-              response.data.forEach((element, index) => {
-                //************ here :
-                /*var hiddenKey = document.createElement("input");
-                hiddenKey.setAttribute("type", "hidden");*/
+        response.data.forEach((element, index) => {
+          //Ces 3 lignes nous permettent d'enregistrer l'id de la ligne pour pouvoir y appliquer une modif
+          var hiddenKey = document.createElement("input");
+          hiddenKey.setAttribute("type", "hidden");
+          hiddenKey.setAttribute("value", element.id_repas);
 
-                var tr = document.createElement("tr");
+          var tr = document.createElement("tr");
 
-                var btnModifier = document.createElement("button");
-                btnModifier.innerHTML = "modifier";
+          var btnModifier = document.createElement("button");
+          btnModifier.innerHTML = "modifier";
 
-                var btnSupprimer = document.createElement("button");
-                btnSupprimer.innerHTML = "supprimer";
-                btnSupprimer.addEventListener("click", (event) => {
-                  axios.delete("/api/repas/" + element.id_repas).then((response) => {
-                    console.log(response);
-                    location.reload();
-                  });
-                });
+          var btnSupprimer = document.createElement("button");
+          btnSupprimer.innerHTML = "supprimer";
 
-                var tdButton = document.createElement("td");
-                tdButton.appendChild(btnModifier);
-                tdButton.appendChild(btnSupprimer);
+          /********************
+           * Event SUPPRIMER *
+           */
+          btnSupprimer.addEventListener("click", (event) => {
+            axios.delete("/api/repas/" + element.id_repas).then((response) => {
+              console.log(response);
+              location.reload();
+            });
+          });
 
-                //On insère la date :
-                var tdDate = document.createElement("td");
+          /********************
+           * Event MODIFIER *
+           */
+          btnModifier.addEventListener("click", (event) => {
+            /*
+            Je transforme le champs date en date
+            Je transforme le champs invite en nbr
+            Je transforme le champs recettes en liste avec toutes les recettes dispo
+            J'ajoute 2 boutons : ok & annuler.
 
-                tdDate.innerHTML = element.Date_repas;
-                tr.appendChild(tdDate);
+            modifier --> Je récup la ligne grace à l'id du repas
+            ok  --> Update
+            annuler --> break ?
+            */
 
-                //Et ensuite les invitées :
-                var tdInvites = document.createElement("td");
-                tdInvites.innerHTML = element.Invites;
-                tr.appendChild(tdInvites);
+            var btnOk = document.createElement("button");
+            btnOk.innerHTML = "OK";
+            tr.appendChild(btnOk);
+            var btnAnnuler = document.createElement("button");
+            btnAnnuler.innerHTML = "Annuler";
 
-                console.log(element.id_repas);
-                //On récupère les recettes de chaque repas et on les ajoute dans le tableau :
-                var tdRecettes = document.createElement("td");
-                console.log("B");
-                tr.appendChild(tdRecettes);
-                tr.appendChild(tdButton);
-                tBody.appendChild(tr);
-                tableau.appendChild(tBody);
-                axios
-                  .get("/api/repas&recettes/" + element.id_repas)
-                  .then((response) => {
-                    console.log("A");
-                    response.data.forEach((recette) => {
-                      var pRecette = document.createElement("p");
-                      pRecette.innerHTML = recette.Nom;
-                      tdRecettes.appendChild(pRecette);
-                    });
-                  });
+            var inputDate = document.createElement("input");
+            inputDate.setAttribute("type", "date");
+            inputDate.setAttribute("preholder", element.Date_repas);
+
+            var inputInvite = document.createElement("input");
+            inputInvite.setAttribute("type", "number");
+            inputInvite.setAttribute("id", "maValue");
+
+            var maValue = document.getElementById("#maValue");
+            btnOk.addEventListener("click", () => {
+              //   dataToUpdate = [
+              //     "date" = inputDate.value
+              // ]
+              alert(maValue.value);
+            });
+            // axios.update("/api/repas/" + element.id_repas).then((response) => {
+
+            //   location.reload();
+            // });
+          });
+
+          var tdButton = document.createElement("td");
+          tdButton.appendChild(btnModifier);
+          tdButton.appendChild(btnSupprimer);
+
+          tr.appendChild(hiddenKey);
+
+          //On insère la date :
+          var tdDate = document.createElement("td");
+
+          tdDate.innerHTML = element.Date_repas;
+          tr.appendChild(tdDate);
+
+          //Et ensuite les invitées :
+          var tdInvites = document.createElement("td");
+          tdInvites.innerHTML = element.Invites;
+          tr.appendChild(tdInvites);
+
+          console.log(element.id_repas);
+          //On récupère les recettes de chaque repas et on les ajoute dans le tableau :
+          var tdRecettes = document.createElement("td");
+          tr.appendChild(tdRecettes);
+          tr.appendChild(tdButton);
+          tBody.appendChild(tr);
+          tableau.appendChild(tBody);
+          axios
+            .get("/api/repas&recettes/" + element.id_repas)
+            .then((response) => {
+              response.data.forEach((recette) => {
+                var pRecette = document.createElement("p");
+                pRecette.innerHTML = recette.Nom;
+                tdRecettes.appendChild(pRecette);
               });
             });
+        });
+      });
 
-            var btnListeCourse = document.getElementById("btn-liste_course");
-            btnListeCourse.addEventListener("click", () => {
-              //génerer la liste des ingrédients avec leur quatité et leur prix :
-              /*récuperation des ingrédients avec leur quantité et leur prix;
-              multipliser la quantité par le nombre d'invités:
-                additionner les nombres d'invités de la semaine;
-                multiplier la quantité d'un ingrédient par ce nombre;
-            });
+      /*******************
+       ** Liste ingrédients
+       ************/
+      var btnListeCourse = document.getElementById("btn-liste_course");
+      var total_qte_ingredient = 0;
+      var id_ingredient = 0;
 
-            /* Fonction modifier :
-      récuperer les éléments de la ligne en question,
-      créer des champs de type input et y insérer la valeur des éléments :
-            date : type 'date'
-            nombre d'invité : type 'nombre'
-            recetees : type  */
+      var courseTable = document.querySelector("#tableau_course");
+      var courseBody = document.createElement("tbody");
 
-            /* Fonction suppression :
-      récupérer l'id du repas et créer une requête de suppresion.
-      */
+      btnListeCourse.addEventListener("click", () => {
+        axios.get("/api/course/").then((response) => {
+          console.log(response.data);
+          response.data.forEach((ligne) => {
+            var tr = document.createElement("tr");
+            var tdIngredient = document.createElement("td");
+            var tdQnt = document.createElement("td");
+            var tdPrix = document.createElement("td");
+            //*********HERE************
+
+            if (ligne.id_ingredient === id_ingredient) {
+              total_qte_ingredient += ligne.qte;
+            } else {
+              tdIngredient.innerHTML = ligne.Nom;
+              tdQnt.innerHTML = ligne.qte;
+              tdPrix.innerHTML = ligne.Prix + "€";
+              total_qte_ingredient = 0;
+              tr.appendChild(tdIngredient);
+              tr.appendChild(tdQnt);
+              tr.appendChild(tdPrix);
+              courseBody.appendChild(tr);
+            }
+            id_ingredient = ligne.id_ingredient;
+          });
+        });
+        courseTable.style.display = "block";
+      });
+      courseTable.appendChild(courseBody);
+
+      /* Fonction modifier :
+            récuperer les éléments de la ligne en question,
+            créer des champs de type input et y insérer la valeur des éléments :
+                  date : type 'date'
+                  nombre d'invité : type 'nombre'
+                  recetees : type  */
+
+      /* Fonction suppression :
+            récupérer l'id du repas et créer une requête de suppresion.
+            */
     </script>
   </body>
 </html>

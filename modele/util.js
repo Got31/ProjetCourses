@@ -91,7 +91,19 @@ app.get("/api/repas", (req, res) => {
   // Avec mysql :
   connection.query(
     // "SELECT * , DATE_FORMAT(Date_repas, '%d %m %Y')  FROM repas",
-    "SELECT id_repas, Invites , DATE_FORMAT(Date_repas, '%d-%m-%Y') as 'Date_repas'  FROM repas",
+    " SELECT id_repas, Invites , DATE_FORMAT(Date_repas, '%d / %m / %Y') as 'Date_repas'" +
+      " FROM repas ORDER BY Date_repas",
+    (error, result) => {
+      if (error) throw error;
+      res.json(result);
+    }
+  );
+});
+
+//Récupération d'un repas :
+app.get("/api/repas/:id", (req, res) => {
+  connection.query(
+    " SELECT Nom FROM repas rps WHERE id_repas = " + req.params.id,
     (error, result) => {
       if (error) throw error;
       res.json(result);
@@ -125,10 +137,27 @@ app.delete("/api/repas/:id", (req, res) => {
   );
 });
 
+//Modification d'un repas :
+app.update("/api/repas/:id", (req, res) => {
+  connection.query(
+    " UPDATE repas SET (Date_repas, Invite) = ('+ +') " + req.params.id,
+    (error, result) => {
+      if (error) throw error;
+      res.json(result);
+    }
+  );
+});
+
 //Récupération des ingrédients, de leur quantité et de leur prix
 app.get("/api/course/", (req, res) => {
-  connexion.query(
-    " SELECT Nom, Prix, Quantite FROM ingredient i, composer c WHERE i.id_ingredient = c.id_ingredient ",
+  connection.query(
+    "SELECT c.id_ingredient, i.Nom, i.Prix, SUM(c.Quantite) as 'qte', rps.id_repas, Invites" +
+      " FROM ingredient i, composer c, repas rps, contenir ct, recette rct" +
+      " WHERE i.id_ingredient = c.id_ingredient" +
+      " AND rct.id_recette = c.id_recette" +
+      " AND rps.id_repas = ct.id_repas" +
+      " AND rct.id_recette = ct.id_recette " +
+      " GROUP BY id_ingredient, rps.id_repas",
     (error, result) => {
       if (error) throw error;
       res.json(result);

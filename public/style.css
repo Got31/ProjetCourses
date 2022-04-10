@@ -13,10 +13,13 @@
   
   .tableau tr:hover {background-color: rgba(89, 181, 158, 0.2);}
   
-  .tableau th {
+  .repas th {
     padding-top: 12px;
     padding-bottom: 12px;
     text-align: left;
     background-color: rgb(89, 181, 158);
+    color: white;
+  }.course th {
+    background-color: rgb(210, 114, 107);
     color: white;
   }
