@@ -62,7 +62,6 @@
            */
           btnSupprimer.addEventListener("click", (event) => {
             axios.delete("/api/repas/" + element.id_repas).then((response) => {
-              console.log(response);
               location.reload();
             });
           });
@@ -84,29 +83,70 @@
 
             var btnOk = document.createElement("button");
             btnOk.innerHTML = "OK";
-            tr.appendChild(btnOk);
+
             var btnAnnuler = document.createElement("button");
             btnAnnuler.innerHTML = "Annuler";
+            tr.appendChild(btnOk);
+            tr.appendChild(btnAnnuler);
 
             var inputDate = document.createElement("input");
             inputDate.setAttribute("type", "date");
-            inputDate.setAttribute("preholder", element.Date_repas);
 
             var inputInvite = document.createElement("input");
             inputInvite.setAttribute("type", "number");
             inputInvite.setAttribute("id", "maValue");
+            inputInvite.setAttribute("value", element.Invites);
 
-            var maValue = document.getElementById("#maValue");
-            btnOk.addEventListener("click", () => {
-              //   dataToUpdate = [
-              //     "date" = inputDate.value
-              // ]
-              alert(maValue.value);
+            var selectRecettes = document.createElement("select");
+            selectRecettes.setAttribute("multiple", "");
+            var optionSelect = axios.get("api/recettes").then((response) => {
+              response.data.forEach((recette) => {
+                var option = document.createElement("option");
+                option.setAttribute("value", recette.id_recette);
+                option.innerHTML = recette.Nom;
+                selectRecettes.appendChild(option);
+              });
             });
-            // axios.update("/api/repas/" + element.id_repas).then((response) => {
+            tdDate.replaceChildren(inputDate);
+            tdInvites.replaceChildren(inputInvite);
+            tdRecettes.replaceChildren(selectRecettes);
 
-            //   location.reload();
-            // });
+            btnOk.addEventListener("click", () => {
+              var dataToUpdate = {
+                Date_repas: inputDate.value,
+                Invite: inputInvite.value,
+              };
+
+              //Récupération des recettes selectionnées
+              var recettesToUpdate = Array.from(selectRecettes.options)
+                .filter((option) => option.selected)
+                .map((option) => option.value);
+
+              // selectRecettes.options.forEach(element => {
+              //   recettesToUpdate.push(element.value)
+              // });
+
+              axios
+                .put("/api/repas/" + element.id_repas, dataToUpdate)
+                .then((response) => {
+                  console.log("repas update FAIT");
+                });
+              axios
+                .delete("/api/repas&recettes/" + element.id_repas)
+                .then((response) => {
+                  console.log("suppression recettes FAIT");
+                });
+              axios
+                .post(
+                  "/api/repas&recettes/" + element.id_repas,
+                  recettesToUpdate
+                )
+                .then((response) => {});
+            });
+
+            btnAnnuler.addEventListener("click", () => {
+              location.reload();
+            });
           });
 
           var tdButton = document.createElement("td");

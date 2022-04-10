@@ -1,3 +1,4 @@
+const { query } = require("express");
 const express = require("express");
 const app = express();
 
@@ -126,21 +127,61 @@ app.get("/api/repas&recettes/:id", (req, res) => {
   );
 });
 
-//Suppression d'un repas :
-app.delete("/api/repas/:id", (req, res) => {
+//Suppression des recettes d'un repas :
+app.delete("/api/repas&recettes/:id", (req, res) => {
   connection.query(
-    " DELETE FROM repas WHERE id_repas = " + req.params.id,
-    (error, result) => {
-      if (error) throw error;
+    "DELETE FROM contenir WHERE id_repas =" + req.params.id,
+    (error) => {
+      if ((error, result)) throw error;
+      console.log("AAAAA");
       res.json(result);
     }
   );
 });
 
-//Modification d'un repas :
-app.update("/api/repas/:id", (req, res) => {
+//Suppression d'un repas :
+app.delete("/api/repas/:id", (req, res) => {
   connection.query(
-    " UPDATE repas SET (Date_repas, Invite) = ('+ +') " + req.params.id,
+    " DELETE FROM repas WHERE id_repas = " + req.params.id,
+    (error) => {
+      if (error) throw error;
+      else {
+        connection.query(
+          " DELETE FROM contenir WHERE id_repas = " + req.params.id,
+          (error, result) => {
+            if (error) throw error;
+            res.json(result);
+          }
+        );
+      }
+    }
+  );
+});
+
+//Attribution des recettes à un repas :
+app.post("/api/repas&recettes/:id", (req, res) => {
+  console.log("eYOEEE");
+  connection.query(
+    req.body.forEach((element) => {
+      "INSERT INTO contenir VALUES(" + req.params.id + "," + element + ")",
+        (error, result) => {
+          if (error) throw error;
+          res.json(result);
+        };
+    })
+  );
+});
+
+// Modification d'un repas :
+app.put("/api/repas/:id", (req, res) => {
+  console.log(req.body);
+  connection.query(
+    " UPDATE `repas` SET `Invites`=" +
+      req.body.Invite +
+      ",`Date_repas`='" +
+      req.body.Date_repas +
+      "' WHERE id_repas =" +
+      req.params.id,
     (error, result) => {
       if (error) throw error;
       res.json(result);
@@ -163,4 +204,12 @@ app.get("/api/course/", (req, res) => {
       res.json(result);
     }
   );
+});
+
+//Récupération des recettes :
+app.get("/api/recettes", (req, res) => {
+  connection.query("SELECT * FROM recette", (error, result) => {
+    if (error) throw error;
+    res.json(result);
+  });
 });
