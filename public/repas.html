@@ -4,18 +4,31 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
     <title>Repas</title>
   </head>
   <body>
     <h2>Gérer ses repas</h2>
     <div id="contenu"></div>
 
-    <table id="tableau_repas">
+    <table class="tableau repas" id="tableau_repas">
       <thead>
         <tr>
           <th id="thDate">Date du repas</th>
           <th id="thInvites">Nombre invités</th>
           <th id="thRecettes">Recettes</th>
+        </tr>
+      </thead>
+      <button id="btn-liste_course">Génerer la liste de course</button>
+    </table>
+
+    <br />
+    <table class="tableau course" id="tableau_course" style="display: none">
+      <thead>
+        <tr>
+          <th id="thIngredient">Ingrédient</th>
+          <th id="thQuantite">Quantité (en g)</th>
+          <th id="thPrix">Prix/le kilo</th>
         </tr>
       </thead>
     </table>
@@ -30,29 +43,119 @@
       axios.get("/api/repas").then((response) => {
         console.log(response.data);
 
-        async();
-        //Insérer les dates :
         response.data.forEach((element, index) => {
-          var tr = document.createElement("tr");
-          var btnModifier = document.createElement("button");
-          var btnSupprimer = document.createElement("button");
-          //here newest :
-          /*var casesDuTableau = [
-            (tdDate = document.createElement("td")),
-            // tdDate.setAttribute('id', 'tdDate'+index)
-            (tdInvites = document.createElement("td")),
-            (tdRecettes = document.createElement("td")),
-            (btnModifier = document.createElement("button")),
-            (btnSupprimer = document.createElement("button")),
-          ];
+          //Ces 3 lignes nous permettent d'enregistrer l'id de la ligne pour pouvoir y appliquer une modif
+          var hiddenKey = document.createElement("input");
+          hiddenKey.setAttribute("type", "hidden");
+          hiddenKey.setAttribute("value", element.id_repas);
 
-          casesDuTableau.forEach((element, index) => {
-            tr.appendChild(element);
+          var tr = document.createElement("tr");
+
+          var btnModifier = document.createElement("button");
+          btnModifier.innerHTML = "modifier";
+
+          var btnSupprimer = document.createElement("button");
+          btnSupprimer.innerHTML = "supprimer";
+
+          /********************
+           * Event SUPPRIMER *
+           */
+          btnSupprimer.addEventListener("click", (event) => {
+            axios.delete("/api/repas/" + element.id_repas).then((response) => {
+              location.reload();
+            });
           });
-          tBody.appendChild(tr);
-          tableau.appendChild(tBody);
-          */
-          //On insère le date :
+
+          /********************
+           * Event MODIFIER *
+           */
+          btnModifier.addEventListener("click", (event) => {
+            /*
+            Je transforme le champs date en date
+            Je transforme le champs invite en nbr
+            Je transforme le champs recettes en liste avec toutes les recettes dispo
+            J'ajoute 2 boutons : ok & annuler.
+
+            modifier --> Je récup la ligne grace à l'id du repas
+            ok  --> Update
+            annuler --> break ?
+            */
+
+            var btnOk = document.createElement("button");
+            btnOk.innerHTML = "OK";
+
+            var btnAnnuler = document.createElement("button");
+            btnAnnuler.innerHTML = "Annuler";
+            tr.appendChild(btnOk);
+            tr.appendChild(btnAnnuler);
+
+            var inputDate = document.createElement("input");
+            inputDate.setAttribute("type", "date");
+
+            var inputInvite = document.createElement("input");
+            inputInvite.setAttribute("type", "number");
+            inputInvite.setAttribute("id", "maValue");
+            inputInvite.setAttribute("value", element.Invites);
+
+            var selectRecettes = document.createElement("select");
+            selectRecettes.setAttribute("multiple", "");
+            var optionSelect = axios.get("api/recettes").then((response) => {
+              response.data.forEach((recette) => {
+                var option = document.createElement("option");
+                option.setAttribute("value", recette.id_recette);
+                option.innerHTML = recette.Nom;
+                selectRecettes.appendChild(option);
+              });
+            });
+            tdDate.replaceChildren(inputDate);
+            tdInvites.replaceChildren(inputInvite);
+            tdRecettes.replaceChildren(selectRecettes);
+
+            btnOk.addEventListener("click", () => {
+              var dataToUpdate = {
+                Date_repas: inputDate.value,
+                Invite: inputInvite.value,
+              };
+
+              //Récupération des recettes selectionnées
+              var recettesToUpdate = Array.from(selectRecettes.options)
+                .filter((option) => option.selected)
+                .map((option) => option.value);
+
+              // selectRecettes.options.forEach(element => {
+              //   recettesToUpdate.push(element.value)
+              // });
+
+              axios
+                .put("/api/repas/" + element.id_repas, dataToUpdate)
+                .then((response) => {
+                  console.log("repas update FAIT");
+                });
+              axios
+                .delete("/api/repas&recettes/" + element.id_repas)
+                .then((response) => {
+                  console.log("suppression recettes FAIT");
+                });
+              axios
+                .post(
+                  "/api/repas&recettes/" + element.id_repas,
+                  recettesToUpdate
+                )
+                .then((response) => {});
+            });
+
+            btnAnnuler.addEventListener("click", () => {
+              location.reload();
+            });
+          });
+
+          var tdButton = document.createElement("td");
+          tdButton.appendChild(btnModifier);
+          tdButton.appendChild(btnSupprimer);
+
+          tr.appendChild(hiddenKey);
+
+          //On insère la date :
           var tdDate = document.createElement("td");
 
           tdDate.innerHTML = element.Date_repas;
@@ -66,6 +169,10 @@
           console.log(element.id_repas);
           //On récupère les recettes de chaque repas et on les ajoute dans le tableau :
           var tdRecettes = document.createElement("td");
+          tr.appendChild(tdRecettes);
+          tr.appendChild(tdButton);
+          tBody.appendChild(tr);
+          tableau.appendChild(tBody);
           axios
             .get("/api/repas&recettes/" + element.id_repas)
             .then((response) => {
@@ -73,26 +180,60 @@
                 var pRecette = document.createElement("p");
                 pRecette.innerHTML = recette.Nom;
                 tdRecettes.appendChild(pRecette);
-                tr.appendChild(tdRecettes);
-                // tBody.appendChild(tr);
-                // tableau.appendChild(tBody);
               });
             });
-
-          tr.appendChild(tdRecettes);
-          tr.appendChild(btnModifier);
-          tr.appendChild(btnSupprimer);
-
-          tBody.appendChild(tr);
-          tableau.appendChild(tBody);
         });
       });
 
-      // var newP = document.createElement("div");
-      // var newContent = document.createTextNode("Hi there and greetings!");
+      /*******************
+       ** Liste ingrédients
+       ************/
+      var btnListeCourse = document.getElementById("btn-liste_course");
+      var total_qte_ingredient = 0;
+      var id_ingredient = 0;
 
-      // newP.appendChild(newContent);
-      // document.body.insertBefore(newP, contenu);
+      var courseTable = document.querySelector("#tableau_course");
+      var courseBody = document.createElement("tbody");
+
+      btnListeCourse.addEventListener("click", () => {
+        axios.get("/api/course/").then((response) => {
+          console.log(response.data);
+          response.data.forEach((ligne) => {
+            var tr = document.createElement("tr");
+            var tdIngredient = document.createElement("td");
+            var tdQnt = document.createElement("td");
+            var tdPrix = document.createElement("td");
+            //*********HERE************
+
+            if (ligne.id_ingredient === id_ingredient) {
+              total_qte_ingredient += ligne.qte;
+            } else {
+              tdIngredient.innerHTML = ligne.Nom;
+              tdQnt.innerHTML = ligne.qte;
+              tdPrix.innerHTML = ligne.Prix + "€";
+              total_qte_ingredient = 0;
+              tr.appendChild(tdIngredient);
+              tr.appendChild(tdQnt);
+              tr.appendChild(tdPrix);
+              courseBody.appendChild(tr);
+            }
+            id_ingredient = ligne.id_ingredient;
+          });
+        });
+        courseTable.style.display = "block";
+      });
+      courseTable.appendChild(courseBody);
+
+      /* Fonction modifier :
+            récuperer les éléments de la ligne en question,
+            créer des champs de type input et y insérer la valeur des éléments :
+                  date : type 'date'
+                  nombre d'invité : type 'nombre'
+                  recetees : type  */
+
+      /* Fonction suppression :
+            récupérer l'id du repas et créer une requête de suppresion.
+            */
     </script>
   </body>
 </html>
