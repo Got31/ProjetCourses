@@ -33,15 +33,6 @@ let urls = [
   },
 ];
 
-app.get("/api/ingredients", (req, res) => {
-  //   res.json(urls);
-  // Avec mysql :
-  connection.query("SELECT * FROM ingredient", (error, result) => {
-    if (error) throw error;
-    res.json(result);
-  });
-});
-
 /*******
  * ***********
  * ***********
@@ -111,6 +102,26 @@ app.get("/api/repas&recettes/:id", (req, res) => {
       res.json(result);
     }
   );
+});
+
+//Récupération des ingrédients
+app.get("/api/ingredients", (req, res) => {
+  //   res.json(urls);
+  // Avec mysql :
+  connection.query("SELECT * FROM ingredient", (error, result) => {
+    if (error) throw error;
+    res.json(result);
+  });
+});
+
+//Insertion des nouveaux ingrédients
+app.post("/api/ingredients", (req, res) => {
+  //   res.json(urls);
+  // Avec mysql :
+  connection.query("INSERT INTO `ingredient` (`id_ingredient`, `Nom`, `Prix`) VALUES (NULL, "+$_POST['ingredients'].nom+", "+$_POST['ingredients'].prix+")", (error, result) => {
+    if (error) throw error;
+    res.json(result);
+  });
 });
 
 //Récupération des repas et de leurs recettes :

@@ -46,6 +46,7 @@
     <script>
       var valider = document.getElementById("valider");
       var section = document.getElementById("ingredients");
+      var compteur = 1;
           
 
       function ajouterIngredient() {
@@ -53,36 +54,74 @@
         axios.get("http://localhost:3001/api/ingredients").then((response) => {
           console.log(response.data);
           var select = document.createElement("select")
+          select.setAttribute("id", "nom"+compteur)
           section.appendChild(select)
+
           var span = document.createElement("span")
           span.innerHTML = " "
           section.appendChild(span)
-          var prixInput = document.createElement("input")
-          section.appendChild(prixInput)
+
+          var qteInput = document.createElement("input")
+          qteInput.setAttribute("id", "qte"+compteur)
+          section.appendChild(qteInput)
+
           var br = document.createElement("br")
           section.appendChild(br)
+          
           response.data.forEach((element, index) => {
             var option = document.createElement("option");
             option.innerHTML = element.Nom;
             select.appendChild(option);
           });
+          valider.style.display = "block"
         });
       }
 
       function creerIngredient() {
         //Création de deux champs input pour le nom et le prix d'un ingrédient, séparés par un espace
         var textInput = document.createElement("input")
+        textInput.setAttribute("id", "nom"+compteur)
         section.appendChild(textInput)
+
         var span = document.createElement("span")
         span.innerHTML = " "
         section.appendChild(span)
+
         var prixInput = document.createElement("input")
+        prixInput.setAttribute("id", "prix"+compteur)
         section.appendChild(prixInput)
+
+        var span = document.createElement("span")
+        span.innerHTML = " "
+        section.appendChild(span)
+
+        var qteInput = document.createElement("input")
+        qteInput.setAttribute("id", "qte"+compteur)
+        section.appendChild(qteInput)
+
         var br = document.createElement("br")
         section.appendChild(br)
+        valider.style.display = "block"
       }
 
-      function valider() {}
+      function valider() {
+        //Pour les ingrédients deja existants, on insere la relation dans la table de jointure entre la recette et l'ingrédient en précisant le prix
+        //Pour les nouveaux ingrédients, on vérifie s'ils existent et si ils sont nouveaux alors on insere dans la table puis on insere la relation dans la table de jointure entre la recette et l'ingrédient en précisant le prix
+        axios.post("http://localhost:3001/api/ingredients",{
+          ingredients:[
+            {
+              nom:"tomate",
+              prix:"25"
+            },
+            {
+              nom:"orange",
+              prix:"25"
+            }
+          ]
+        }).then((response) => {
+
+        });
+      }
     </script>
   </body>
 </html>
