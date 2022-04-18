@@ -76,6 +76,14 @@ app.listen(3001, () => {
  * PROJET MENU
  * ***********
  */
+ app.get("/api/ingredients", (req, res) => {
+  //   res.json(urls);
+  // Avec mysql :
+  connection.query("SELECT * FROM ingredient", (error, result) => {
+    if (error) throw error;
+    res.json(result);
+  });
+});
 
 //Récupération des repas :
 app.get("/api/repas", (req, res) => {
