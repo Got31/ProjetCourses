@@ -75,6 +75,7 @@
           });
           valider.style.display = "block"
         });
+        compteur++
       }
 
       function creerIngredient() {
@@ -102,23 +103,24 @@
         var br = document.createElement("br")
         section.appendChild(br)
         valider.style.display = "block"
+        compteur++
       }
 
       function valider() {
         //Pour les ingrédients deja existants, on insere la relation dans la table de jointure entre la recette et l'ingrédient en précisant le prix
         //Pour les nouveaux ingrédients, on vérifie s'ils existent et si ils sont nouveaux alors on insere dans la table puis on insere la relation dans la table de jointure entre la recette et l'ingrédient en précisant le prix
-        axios.post("http://localhost:3001/api/ingredients",{
-          ingredients:[
-            {
-              nom:"tomate",
-              prix:"25"
-            },
-            {
-              nom:"orange",
-              prix:"25"
-            }
-          ]
-        }).then((response) => {
+        var ingredients = [];
+
+          for (let i = 1; i <= compteur; i++) {
+            var name = document.getElementById("nom"+compteur)
+            var prix = document.getElementById("prix"+compteur)
+            ingredients.push({
+              name: name,
+              prix: prix
+            })
+          }
+        console.log(ingredients);
+        axios.post("http://localhost:3001/api/ingredients", ingredients).then((response) => {
 
         });
       }
