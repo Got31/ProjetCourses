@@ -205,6 +205,19 @@ app.get("/api/course/", (req, res) => {
   );
 });
 
+//Ajout des ingrédients
+app.post("/api/addingredients/", (req, res) => {
+  connection.query(
+    req.body.forEach((element) => {
+      "INSERT INTO contenir VALUES(" + req.params.id + "," + element + ")",
+        (error, result) => {
+          if (error) throw error;
+          res.json(result);
+        };
+    })
+  );
+});
+
 //Récupération des recettes :
 app.get("/api/recettes", (req, res) => {
   connection.query("SELECT * FROM recette", (error, result) => {
