@@ -16,24 +16,6 @@ app.use(express.json());
 //Gestion des fichiers statiques
 app.use(express.static("public"));
 
-let urls = [
-  {
-    name: "korben",
-    link: "https://www.korben.info",
-    description: "Korben",
-  },
-  {
-    name: "le monde",
-    link: "https://www.lemonde.fr",
-    description: "Le monde",
-  },
-  {
-    name: "google",
-    link: "https://www.google.fr",
-    description: "Gooogle",
-  },
-];
-
 /*******
  * ***********
  * ***********
