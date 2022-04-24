@@ -6,3 +6,34 @@ membres du groupe :
 Théo Blanchandin
 Gauthier Laluyaux
 Hassane LAMINE
+
+
+****************************
+Processus de lancement :
+- npm install
+- nodemon
+- Lancer wamp et importer la bdd --> ressources/menu.sql
+- Lancer le projet dans un navigateur avec comme adresse : localhost:3001
+
+***************************
+Les paramêtres de Routes se trouvent dans le fichier --> modele/util.js
+
+nom de la bdd : "menu"
+Les tables existantes : repas, recette, ingredient, contenir, composer.
+
+***************************
+Les fonctionnalités du projet (à partir de la page d'accueil) :
+
+  Sur la page d'accueil, nous pouvons choisir l'une des quatres actions suivantes :
+  
+    - Liste des repas : Ce lien nous envoie vers une nouvelle page de visualisation des repas existant ainsi qu'une possibilité
+    de modification et de suppression de ces repas.
+    C'est à travers cette page que l'on peut génerer la liste de course via le bouton : "Génerer la liste de course".
+    
+    - Création d'une repas  Ce lien nous envoie vers une page de création d'un repas en saisissant sa date, le nombres d'invités ainsi 
+    que la sélection des recettes souhaitées.
+    
+    Liste des recettes : 
+    Création des recettes :
+    
+    
