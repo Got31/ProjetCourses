@@ -129,10 +129,9 @@ app.get("/api/repas&recettes/:id", (req, res) => {
 //Suppression des recettes d'un repas :
 app.delete("/api/repas&recettes/:id", (req, res) => {
   connection.query(
-    "DELETE FROM contenir WHERE id_repas =" + req.params.id,
-    (error) => {
-      if ((error, result)) throw error;
-      console.log("AAAAA");
+    " DELETE FROM contenir WHERE id_repas = " + req.params.id,
+    (error, result) => {
+      if (error) throw error;
       res.json(result);
     }
   );
@@ -159,16 +158,15 @@ app.delete("/api/repas/:id", (req, res) => {
 
 //Attribution des recettes à un repas :
 app.post("/api/repas&recettes/:id", (req, res) => {
-  console.log("eYOEEE");
-  connection.query(
-    req.body.forEach((element) => {
-      "INSERT INTO contenir VALUES(" + req.params.id + "," + element + ")",
-        (error, result) => {
-          if (error) throw error;
-          res.json(result);
-        };
-    })
-  );
+  for (let i = 0; i < req.body.length; i++) {
+    connection.query(
+      "INSERT INTO contenir VALUES(" + req.params.id + "," + req.body[i] + ")",
+      (error, result) => {
+        if (error) throw error;
+        res.json(result);
+      }
+    );
+  }
 });
 
 // Modification d'un repas :
@@ -189,20 +187,30 @@ app.put("/api/repas/:id", (req, res) => {
 });
 
 //Création d'un repas
-app.post("/api/repas&recettes", (req, res) => {
-  console.log(req.body);
+app.post("/api/repas&recettes/", (req, res) => {
+  // req.body.forEach((element) => {
   connection.query(
-    req.body.forEach((element) => {
-      "INSERT INTO 'repas' ('Invites', 'Date_repas') VALUES(" +
-        element.Invites +
-        ",'" +
-        element.Date_repas +
-        "')",
-        (error, result) => {
-          if (error) throw error;
-          res.json(result);
-        };
-    })
+    "INSERT INTO repas (Invites, Date_repas) VALUES(" +
+      req.body.Invites +
+      ",'" +
+      req.body.Date_repas +
+      "')",
+    (error, result) => {
+      if (error) throw error;
+      res.json(result);
+    }
+    // })
+  );
+});
+
+//Récuperation du nouveau repas :
+app.get("/api/nouveauRepas/", (req, res) => {
+  connection.query(
+    " SELECT max(id_repas) as 'id_repas' FROM repas",
+    (error, result) => {
+      if (error) throw error;
+      res.json(result);
+    }
   );
 });
 

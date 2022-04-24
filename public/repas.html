@@ -58,7 +58,7 @@
           btnSupprimer.innerHTML = "supprimer";
 
           /********************
-           * Event SUPPRIMER *
+           * SUPPRIMER REPAS *
            */
           btnSupprimer.addEventListener("click", (event) => {
             axios.delete("/api/repas/" + element.id_repas).then((response) => {
@@ -67,20 +67,9 @@
           });
 
           /********************
-           * Event MODIFIER *
+           * MODIFIER REPAS *
            */
           btnModifier.addEventListener("click", (event) => {
-            /*
-            Je transforme le champs date en date
-            Je transforme le champs invite en nbr
-            Je transforme le champs recettes en liste avec toutes les recettes dispo
-            J'ajoute 2 boutons : ok & annuler.
-
-            modifier --> Je récup la ligne grace à l'id du repas
-            ok  --> Update
-            annuler --> break ?
-            */
-
             var btnOk = document.createElement("button");
             btnOk.innerHTML = "OK";
 
@@ -122,26 +111,38 @@
                 .filter((option) => option.selected)
                 .map((option) => option.value);
 
+              // var recettesToUpdate = Array.from(selectRecettes.options)
+              //   .filter((option) => option.selected)
+              //   .map((option) => option.value);
+
               // selectRecettes.options.forEach(element => {
               //   recettesToUpdate.push(element.value)
               // });
 
-              axios
-                .put("/api/repas/" + element.id_repas, dataToUpdate)
-                .then((response) => {
-                  console.log("repas update FAIT");
-                });
-              axios
-                .delete("/api/repas&recettes/" + element.id_repas)
-                .then((response) => {
-                  console.log("suppression recettes FAIT");
-                });
-              axios
-                .post(
-                  "/api/repas&recettes/" + element.id_repas,
-                  recettesToUpdate
-                )
-                .then((response) => {});
+              //update du repas :
+              if (dataToUpdate.Date_repas != "" && dataToUpdate.Invite != "") {
+                axios
+                  .put("/api/repas/" + element.id_repas, dataToUpdate)
+                  .then((response) => {
+                    console.log("repas update FAIT");
+                    //Suppression de ces recettes :
+                    axios
+                      .delete("/api/repas&recettes/" + element.id_repas)
+                      .then((response) => {
+                        console.log("suppression recettes FAIT");
+                        console.log(recettesToUpdate);
+                        axios
+                          .post(
+                            "/api/repas&recettes/" + element.id_repas,
+                            recettesToUpdate
+                          )
+                          .then((response) => {
+                            console.log("MAJ recettes FAIT");
+                          });
+                        location.reload();
+                      });
+                  });
+              }
             });
 
             btnAnnuler.addEventListener("click", () => {
@@ -173,6 +174,7 @@
           tr.appendChild(tdButton);
           tBody.appendChild(tr);
           tableau.appendChild(tBody);
+
           axios
             .get("/api/repas&recettes/" + element.id_repas)
             .then((response) => {

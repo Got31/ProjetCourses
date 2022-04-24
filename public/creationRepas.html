@@ -25,7 +25,6 @@
     <script>
       /* parcourir un tableau de recettes et les afficher en mode cases à cocher*/
       window.onload = () => {
-        // document.querySelector("button").addEventListener("click", () => {
         let nb_recette;
         axios.get("/api/recettes").then((response) => {
           response.data.forEach((recette) => {
@@ -38,40 +37,25 @@
             checkbox.setAttribute("type", "checkbox");
             checkbox.setAttribute("class", "recette");
             checkbox.setAttribute("name", recette.Nom);
-            checkbox.setAttribute("value", recette.Nom);
+            checkbox.setAttribute("value", recette.id_recette);
             document.querySelector("div").appendChild(label);
             document.querySelector("div").appendChild(checkbox);
+            document
+              .querySelector("div")
+              .appendChild(document.createElement("br"));
           });
         });
       };
+
       document.querySelector("button").addEventListener("click", () => {
         // var recette = [];
         var checkboxes = document.getElementsByClassName("recette");
-        // cc.forEach((element) => {
-        //   console.log(element);
-        // });
         let j = 0;
-        /*
-        for (let i = 0; i < checkboxes.length; i++) {
-          console.log(checkboxes.length);
-          console.log(checkboxes[i]);
-          if (checkboxes[i].getAttribute(checked) === true) {
-            recette.push(checkboxes[i]);
-            j++;
-            console.log(recette);
-          }
-          if (i == checkboxes.length && j == 0) {
-            document.getElementById("#alert").innerHTML =
-              "Vueillez sélectionner une recette";
-          }
-        }
-        */
         var recettes = document.querySelectorAll(
           "input[type=checkbox]:checked"
         );
 
         if (recettes.length == 0) {
-          console.log("NON");
           document.getElementById("alert").innerHTML =
             "Vueillez sélectionner une recette";
           document.getElementById.style.color = "red";
@@ -82,19 +66,28 @@
           // recette.push(obj.value);
         });
 
-        var repas_datas = [
-          {
-            Invites: document.getElementById("nbrInvites").value,
-            Date_repas: document.getElementById("dateRepas").value,
-            // recettes: valueArray,
-          },
-        ];
+        var repas_datas = {
+          Invites: document.getElementById("nbrInvites").value,
+          Date_repas: document.getElementById("dateRepas").value,
+        };
         // repas_datas.Invite.push(document.getElementById("nbrInvites").value);
         // repas_datas.Date_repas.push(document.getElementById("dateRepas").value);
         // repas_datas.recettes.push(recettes);
         console.log(repas_datas);
-        axios.post("/api/repas&recettes", repas_datas).then((response) => {});
-        // console.log(valueArray);
+        //Je crée le repas
+        axios.post("/api/repas&recettes/", repas_datas).then((response) => {
+          //je récup l'id du repas
+          axios.get("/api/nouveauRepas/").then((response) => {
+            response.data.forEach((ligne) => {
+              console.log(ligne.id_repas);
+              axios
+                .post("/api/repas&recettes/" + ligne.id_repas, valueArray)
+                .then((response) => {
+                  alert("Repas créé avec succès");
+                });
+            });
+          });
+        });
       });
     </script>
   </body>
