@@ -1,4 +1,5 @@
-PROJET GESTION DE REPAS
+***********************************
+***** PROJET GESTION DE REPAS *****
 
 
 membres du groupe :
@@ -8,20 +9,33 @@ Gauthier Laluyaux
 Hassane LAMINE
 
 
-****************************
-Processus de lancement :
+
+************************************************************************************
+***************** Processus de lancement *******************************************
+
 - npm install
 - nodemon
 - Lancer wamp et importer la bdd --> ressources/menu.sql
 - Lancer le projet dans un navigateur avec comme adresse : localhost:3001
 
-***************************
+
+
+
+************************************************************************************
+***************** Routes de l'API **************************************************
+
 Les paramêtres de Routes se trouvent dans le fichier --> modele/util.js
 
 nom de la bdd : "menu"
 Les tables existantes : repas, recette, ingredient, contenir, composer.
 
-***************************
+
+
+
+************************************************************************************
+***************** pages et fonctionnalitées ****************************************
+
+
 Les fonctionnalités du projet (à partir de la page d'accueil) :
 
   Sur la page d'accueil, nous pouvons choisir l'une des quatres actions suivantes :
