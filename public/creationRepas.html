@@ -4,22 +4,98 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
     <title>Création d'un repas</title>
   </head>
   <body>
     <h2>Création d'un repas</h2>
 
-    <label for="dateRepas">date</label>
-    <input type="date" name="dateRepas" id="dateRepas" />
+    <div>
+      <label for="dateRepas">Choisissez la date du repas</label>
+      <input type="date" name="dateRepas" id="dateRepas" />
+      <br />
+      <label for="nbrInvites">Choisissez le nombre d'invités</label>
+      <input type="number" name="nbrInvites" id="nbrInvites" />
+      <br />
+      <p id="alert"></p>
+    </div>
+    <button id="monbouton">Créer</button>
 
-    <label for="nbrInvites">nombre invités</label>
-    <input type="date" name="nbrInvites" id="nbrInvites" />
-
-    <label for="recette">recettes</label>
-    <input type="checkbox" name="recette" id="recette" />
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.26.1/axios.min.js"></script>
     <script>
       /* parcourir un tableau de recettes et les afficher en mode cases à cocher*/
+      window.onload = () => {
+        // document.querySelector("button").addEventListener("click", () => {
+        let nb_recette;
+        axios.get("/api/recettes").then((response) => {
+          response.data.forEach((recette) => {
+            var label = document.createElement("label");
+            var checkbox = document.createElement("input");
+            nb_recette += 1;
+            label.innerHTML = recette.Nom;
+            label.setAttribute("for", recette.Nom);
+
+            checkbox.setAttribute("type", "checkbox");
+            checkbox.setAttribute("class", "recette");
+            checkbox.setAttribute("name", recette.Nom);
+            checkbox.setAttribute("value", recette.Nom);
+            document.querySelector("div").appendChild(label);
+            document.querySelector("div").appendChild(checkbox);
+          });
+        });
+      };
+      document.querySelector("button").addEventListener("click", () => {
+        // var recette = [];
+        var checkboxes = document.getElementsByClassName("recette");
+        // cc.forEach((element) => {
+        //   console.log(element);
+        // });
+        let j = 0;
+        /*
+        for (let i = 0; i < checkboxes.length; i++) {
+          console.log(checkboxes.length);
+          console.log(checkboxes[i]);
+          if (checkboxes[i].getAttribute(checked) === true) {
+            recette.push(checkboxes[i]);
+            j++;
+            console.log(recette);
+          }
+          if (i == checkboxes.length && j == 0) {
+            document.getElementById("#alert").innerHTML =
+              "Vueillez sélectionner une recette";
+          }
+        }
+        */
+        var recettes = document.querySelectorAll(
+          "input[type=checkbox]:checked"
+        );
+
+        if (recettes.length == 0) {
+          console.log("NON");
+          document.getElementById("alert").innerHTML =
+            "Vueillez sélectionner une recette";
+          document.getElementById.style.color = "red";
+        }
+
+        var valueArray = Array.prototype.map.call(recettes, function (obj) {
+          return obj.value;
+          // recette.push(obj.value);
+        });
+
+        var repas_datas = [
+          {
+            Invites: document.getElementById("nbrInvites").value,
+            Date_repas: document.getElementById("dateRepas").value,
+            // recettes: valueArray,
+          },
+        ];
+        // repas_datas.Invite.push(document.getElementById("nbrInvites").value);
+        // repas_datas.Date_repas.push(document.getElementById("dateRepas").value);
+        // repas_datas.recettes.push(recettes);
+        console.log(repas_datas);
+        axios.post("/api/repas&recettes", repas_datas).then((response) => {});
+        // console.log(valueArray);
+      });
     </script>
   </body>
 </html>

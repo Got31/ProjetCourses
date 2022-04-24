@@ -76,7 +76,7 @@ app.listen(3001, () => {
  * PROJET MENU
  * ***********
  */
- app.get("/api/ingredients", (req, res) => {
+app.get("/api/ingredients", (req, res) => {
   //   res.json(urls);
   // Avec mysql :
   connection.query("SELECT * FROM ingredient", (error, result) => {
@@ -185,6 +185,24 @@ app.put("/api/repas/:id", (req, res) => {
       if (error) throw error;
       res.json(result);
     }
+  );
+});
+
+//Création d'un repas
+app.post("/api/repas&recettes", (req, res) => {
+  console.log(req.body);
+  connection.query(
+    req.body.forEach((element) => {
+      "INSERT INTO 'repas' ('Invites', 'Date_repas') VALUES(" +
+        element.Invites +
+        ",'" +
+        element.Date_repas +
+        "')",
+        (error, result) => {
+          if (error) throw error;
+          res.json(result);
+        };
+    })
   );
 });
 
